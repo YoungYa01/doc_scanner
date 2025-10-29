@@ -1,3 +1,6 @@
+import base64
+import json
+
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -8,6 +11,8 @@ import logging
 import os
 
 from doc_scanner.DocumentScanner import DocumentScanner
+from doc_scanner.utils import process_image_base, process_grayscale, process_sharpen, process_black_white, \
+    process_enhance
 
 # 设置日志
 logger = logging.getLogger(__name__)
@@ -56,7 +61,7 @@ def document_scan(request):
 
     uploaded_file = request.FILES['image']
 
-    # 检查文件大小（限制为10MB）
+    # 检查文件大小（限制为15MB）
     max_size = 15 * 1024 * 1024  # 15MB
     if uploaded_file.size > max_size:
         return JsonResponse({
@@ -99,6 +104,197 @@ def document_scan(request):
             "data": None
         }, status=500)
 
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def process_grayscale_api(request):
+    """接口1：灰度处理 - 支持参数"""
+    try:
+        # 获取图像数据和参数
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+            image_str = data.get('image', '')
+            params = data.get('params', {})
+        else:
+            if 'image' not in request.FILES:
+                return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
+            uploaded_file = request.FILES['image']
+            image_data = uploaded_file.read()
+            image_str = base64.b64encode(image_data).decode('utf-8')
+            # 对于表单数据，可以尝试从请求中获取参数
+            params = {
+                'method': request.POST.get('method', 'average'),
+            }
+
+        if not image_str:
+            return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
+
+        # 解码 base64 图像
+        if ',' in image_str:
+            image_str = image_str.split(',')[1]
+
+        image_data = base64.b64decode(image_str)
+
+        # 处理图像
+        result = process_image_base(image_data, process_grayscale, "grayscale", **params)
+
+        if result['success']:
+            return JsonResponse(result)
+        else:
+            return JsonResponse(result, status=500)
+
+    except Exception as e:
+        logger.error(f"灰度处理接口错误: {e}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def process_sharpen_api(request):
+    """接口2：锐化处理 - 支持参数"""
+    try:
+        # 获取图像数据和参数
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+            image_str = data.get('image', '')
+            params = data.get('params', {})
+        else:
+            if 'image' not in request.FILES:
+                return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
+            uploaded_file = request.FILES['image']
+            image_data = uploaded_file.read()
+            image_str = base64.b64encode(image_data).decode('utf-8')
+            params = {
+                'intensity': float(request.POST.get('intensity', 1.0)),
+                'use_unsharp_mask': request.POST.get('use_unsharp_mask', 'false').lower() == 'true',
+                'sigma': float(request.POST.get('sigma', 1.0)),
+            }
+
+        if not image_str:
+            return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
+
+        # 解码 base64 图像
+        if ',' in image_str:
+            image_str = image_str.split(',')[1]
+
+        image_data = base64.b64decode(image_str)
+
+        # 处理图像
+        result = process_image_base(image_data, process_sharpen, "sharpen", **params)
+
+        if result['success']:
+            return JsonResponse(result)
+        else:
+            return JsonResponse(result, status=500)
+
+    except Exception as e:
+        logger.error(f"锐化处理接口错误: {e}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def process_black_white_api(request):
+    """接口3：黑白处理 - 支持参数"""
+    try:
+        # 获取图像数据和参数
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+            image_str = data.get('image', '')
+            params = data.get('params', {})
+        else:
+            if 'image' not in request.FILES:
+                return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
+            uploaded_file = request.FILES['image']
+            image_data = uploaded_file.read()
+            image_str = base64.b64encode(image_data).decode('utf-8')
+            params = {
+                'method': request.POST.get('method', 'adaptive'),
+                'threshold': int(request.POST.get('threshold', 127)),
+                'block_size': int(request.POST.get('block_size', 11)),
+                'c': int(request.POST.get('c', 2)),
+                'apply_morphology': request.POST.get('apply_morphology', 'false').lower() == 'true',
+                'kernel_size': int(request.POST.get('kernel_size', 3)),
+            }
+
+        if not image_str:
+            return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
+
+        # 解码 base64 图像
+        if ',' in image_str:
+            image_str = image_str.split(',')[1]
+
+        image_data = base64.b64decode(image_str)
+
+        # 处理图像
+        result = process_image_base(image_data, process_black_white, "black_white", **params)
+
+        if result['success']:
+            return JsonResponse(result)
+        else:
+            return JsonResponse(result, status=500)
+
+    except Exception as e:
+        logger.error(f"黑白处理接口错误: {e}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def process_enhance_api(request):
+    """接口4：增强处理 - 支持参数"""
+    try:
+        # 获取图像数据和参数
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+            image_str = data.get('image', '')
+            params = data.get('params', {})
+        else:
+            if 'image' not in request.FILES:
+                return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
+            uploaded_file = request.FILES['image']
+            image_data = uploaded_file.read()
+            image_str = base64.b64encode(image_data).decode('utf-8')
+            params = {
+                'clip_limit': float(request.POST.get('clip_limit', 3.0)),
+                'tile_grid_size': int(request.POST.get('tile_grid_size', 8)),
+                'brightness': float(request.POST.get('brightness', 1.0)),
+                'contrast': float(request.POST.get('contrast', 1.0)),
+                'sharpen_after_enhance': request.POST.get('sharpen_after_enhance', 'false').lower() == 'true',
+            }
+
+        if not image_str:
+            return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
+
+        # 解码 base64 图像
+        if ',' in image_str:
+            image_str = image_str.split(',')[1]
+
+        image_data = base64.b64decode(image_str)
+
+        # 处理图像
+        result = process_image_base(image_data, process_enhance, "enhance", **params)
+
+        if result['success']:
+            return JsonResponse(result)
+        else:
+            return JsonResponse(result, status=500)
+
+    except Exception as e:
+        logger.error(f"增强处理接口错误: {e}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
 
 @csrf_exempt
 @require_http_methods(["GET"])

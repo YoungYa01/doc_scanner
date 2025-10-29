@@ -10,6 +10,7 @@
             margin: 0;
             padding: 0;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -17,6 +18,7 @@
             background-color: #f5f7fa;
             padding: 20px;
         }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -25,35 +27,42 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
+
         header {
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
+
         h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
         }
+
         .subtitle {
             font-size: 1.1rem;
             opacity: 0.9;
         }
+
         .content {
             padding: 30px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
         }
+
         @media (max-width: 768px) {
             .content {
                 grid-template-columns: 1fr;
             }
         }
+
         .upload-section {
             border-right: 1px solid #eee;
             padding-right: 30px;
         }
+
         @media (max-width: 768px) {
             .upload-section {
                 border-right: none;
@@ -62,6 +71,7 @@
                 padding-bottom: 30px;
             }
         }
+
         .upload-area {
             border: 2px dashed #6a11cb;
             border-radius: 10px;
@@ -72,21 +82,26 @@
             background-color: #f9f7ff;
             cursor: pointer;
         }
+
         .upload-area:hover {
             background-color: #f0ebff;
         }
+
         .upload-area.dragover {
             background-color: #e6ddff;
             border-color: #4a00e0;
         }
+
         .upload-icon {
             font-size: 48px;
             color: #6a11cb;
             margin-bottom: 15px;
         }
+
         .file-input {
             display: none;
         }
+
         .btn {
             display: inline-block;
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
@@ -100,20 +115,24 @@
             margin-top: 10px;
             box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
         }
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
         }
+
         .btn:disabled {
             background: #cccccc;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
+
         .preview-section {
             display: flex;
             flex-direction: column;
         }
+
         .preview-container, .result-container {
             flex: 1;
             border: 1px solid #eee;
@@ -127,52 +146,62 @@
             justify-content: center;
             background-color: #f9f9f9;
         }
+
         .preview-image, .result-image {
             max-width: 100%;
             max-height: 400px;
             display: none;
         }
+
         .preview-placeholder, .result-placeholder {
             color: #999;
             text-align: center;
         }
+
         .result-section {
             grid-column: 1 / -1;
             margin-top: 20px;
         }
+
         .result-info {
             border-radius: 10px;
             padding: 20px;
             margin-top: 10px;
             display: none;
         }
+
         .result-success {
             background-color: #d4edda;
             border: 1px solid #c3e6cb;
             color: #155724;
         }
+
         .result-error {
             background-color: #f8d7da;
             border: 1px solid #f5c6cb;
             color: #721c24;
         }
+
         .result-loading {
             background-color: #cce7ff;
             border: 1px solid #b3d9ff;
             color: #004085;
         }
+
         .detection-item {
             background: white;
             border-radius: 5px;
             padding: 15px;
             margin: 10px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
+
         .detection-header {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
         }
+
         .confidence {
             background: #6a11cb;
             color: white;
@@ -180,6 +209,7 @@
             border-radius: 20px;
             font-size: 0.9rem;
         }
+
         .file-info {
             margin: 15px 0;
             padding: 10px;
@@ -187,6 +217,7 @@
             border-radius: 5px;
             font-size: 0.9rem;
         }
+
         .instructions {
             margin: 20px 0;
             padding: 15px;
@@ -194,30 +225,37 @@
             border-radius: 5px;
             border-left: 4px solid #2575fc;
         }
+
         .instructions h3 {
             margin-bottom: 10px;
             color: #2575fc;
         }
+
         .instructions ul {
             padding-left: 20px;
         }
+
         .instructions li {
             margin-bottom: 5px;
         }
+
         .image-comparison {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-top: 20px;
         }
+
         @media (max-width: 768px) {
             .image-comparison {
                 grid-template-columns: 1fr;
             }
         }
+
         .image-box {
             text-align: center;
         }
+
         .image-box h3 {
             margin-bottom: 10px;
             color: #6a11cb;
@@ -225,182 +263,289 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>文档扫描服务</h1>
-            <p class="subtitle">上传图片进行文档检测和识别 - 返回识别后的图片</p>
-        </header>
+<div class="container">
+    <header>
+        <h1>文档扫描服务</h1>
+        <p class="subtitle">上传图片进行文档检测和识别 - 返回识别后的图片</p>
+    </header>
 
-        <div class="content">
-            <div class="upload-section">
-                <h2>上传图片</h2>
-                <p>选择或拖拽图片文件到下方区域</p>
+    <div class="content">
+        <div class="upload-section">
+            <h2>上传图片</h2>
+            <p>选择或拖拽图片文件到下方区域</p>
 
-                <div class="instructions">
-                    <h3>使用说明：</h3>
-                    <ul>
-                        <li>支持格式：JPEG、PNG、JPG</li>
-                        <li>文件大小限制：10MB</li>
-                        <li>系统将自动检测图片中的文档区域</li>
-                        <li>返回识别后的图片，包含检测框</li>
-                    </ul>
-                </div>
-
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📁</div>
-                    <h3>点击或拖拽文件到此处</h3>
-                    <p>支持 JPEG、PNG 格式，最大 10MB</p>
-                    <input type="file" id="fileInput" class="file-input" accept="image/jpeg,image/png,image/jpg">
-                    <button class="btn" id="uploadBtn">选择文件</button>
-                </div>
-
-                <div class="file-info" id="fileInfo" style="display: none;">
-                    <strong>已选择文件：</strong> <span id="fileName"></span> (<span id="fileSize"></span>)
-                </div>
-
-                <button class="btn" id="submitBtn" disabled>开始扫描</button>
+            <div class="instructions">
+                <h3>使用说明：</h3>
+                <ul>
+                    <li>支持格式：JPEG、PNG、JPG</li>
+                    <li>文件大小限制：10MB</li>
+                    <li>系统将自动检测图片中的文档区域</li>
+                    <li>返回识别后的图片，包含检测框</li>
+                </ul>
             </div>
 
-            <div class="preview-section">
-                <h2>识别结果</h2>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <h3>点击或拖拽文件到此处</h3>
+                <p>支持 JPEG、PNG 格式，最大 10MB</p>
+                <input type="file" id="fileInput" class="file-input" accept="image/jpeg,image/png,image/jpg">
+                <button class="btn" id="uploadBtn">选择文件</button>
+            </div>
 
-                <div class="image-comparison">
-                    <div class="image-box">
-                        <h3>原始图片</h3>
-                        <div class="preview-container">
-                            <img id="previewImage" class="preview-image" alt="原始图片">
-                            <div class="preview-placeholder" id="previewPlaceholder">
-                                原始图片预览将显示在这里
-                            </div>
-                        </div>
-                    </div>
+            <div class="file-info" id="fileInfo" style="display: none;">
+                <strong>已选择文件：</strong> <span id="fileName"></span> (<span id="fileSize"></span>)
+            </div>
 
-                    <div class="image-box">
-                        <h3>识别结果</h3>
-                        <div class="result-container">
-                            <img id="resultImage" class="result-image" alt="识别结果">
-                            <div class="result-placeholder" id="resultPlaceholder">
-                                识别结果将显示在这里
-                            </div>
+            <button class="btn" id="submitBtn" disabled>开始扫描</button>
+        </div>
+
+        <div class="preview-section">
+            <h2>识别结果</h2>
+
+            <div class="image-comparison">
+                <div class="image-box">
+                    <h3>原始图片</h3>
+                    <div class="preview-container">
+                        <img id="previewImage" class="preview-image" alt="原始图片">
+                        <div class="preview-placeholder" id="previewPlaceholder">
+                            原始图片预览将显示在这里
                         </div>
                     </div>
                 </div>
 
-                <div class="result-info" id="resultInfo">
-                    <!-- 结果信息将通过JavaScript动态填充 -->
+                <div class="image-box">
+                    <h3>识别结果</h3>
+                    <div class="result-container">
+                        <img id="resultImage" class="result-image" alt="识别结果">
+                        <div class="result-placeholder" id="resultPlaceholder">
+                            识别结果将显示在这里
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <div class="result-info" id="resultInfo">
+                <!-- 结果信息将通过JavaScript动态填充 -->
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const fileInput = document.getElementById('fileInput');
-            const uploadBtn = document.getElementById('uploadBtn');
-            const submitBtn = document.getElementById('submitBtn');
-            const uploadArea = document.getElementById('uploadArea');
-            const fileInfo = document.getElementById('fileInfo');
-            const fileName = document.getElementById('fileName');
-            const fileSize = document.getElementById('fileSize');
-            const previewImage = document.getElementById('previewImage');
-            const previewPlaceholder = document.getElementById('previewPlaceholder');
-            const resultImage = document.getElementById('resultImage');
-            const resultPlaceholder = document.getElementById('resultPlaceholder');
-            const resultInfo = document.getElementById('resultInfo');
+<div class="image-processing-section container" style="margin-top: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+    <h2>图像处理功能</h2>
 
-            // 点击上传区域触发文件选择
-            uploadBtn.addEventListener('click', function() {
-                fileInput.click();
-            });
+    <div class="upload-area" style="border: 2px dashed #ccc; padding: 20px; text-align: center; margin: 10px 0;">
+        <input type="file" id="processFileInput" accept="image/*" style="display: none;">
+        <button class="btn" onclick="document.getElementById('processFileInput').click()">选择处理图片</button>
+        <div id="processFileInfo" style="margin-top: 10px;"></div>
+    </div>
 
-            // 文件选择变化事件
-            fileInput.addEventListener('change', function(e) {
-                if (this.files.length > 0) {
-                    handleFileSelection(this.files[0]);
-                }
-            });
+    <!-- 参数控制区域 -->
+    <div class="parameter-controls" style="margin: 15px 0; padding: 15px; background: #f9f9f9; border-radius: 5px;">
+        <h3>处理参数</h3>
 
-            // 拖拽事件处理
-            uploadArea.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                uploadArea.classList.add('dragover');
-            });
+        <!-- 灰度处理参数 -->
+        <div id="grayscaleParams" class="param-group" style="display: none;">
+            <label>灰度方法:
+                <select id="grayscaleMethod">
+                    <option value="average">平均值法</option>
+                    <option value="luminosity">亮度加权法</option>
+                    <option value="custom">自定义权重</option>
+                </select>
+            </label>
+        </div>
 
-            uploadArea.addEventListener('dragleave', function() {
-                uploadArea.classList.remove('dragover');
-            });
+        <!-- 锐化处理参数 -->
+        <div id="sharpenParams" class="param-group" style="display: none;">
+            <label>锐化强度: <input type="range" id="sharpenIntensity" min="0.1" max="3.0" step="0.1" value="1.0">
+                <span id="sharpenIntensityValue">1.0</span>
+            </label>
+            <label>
+                <input type="checkbox" id="useUnsharpMask"> 使用非锐化掩蔽
+            </label>
+            <label id="sigmaLabel" style="display: none;">
+                高斯模糊强度: <input type="range" id="sharpenSigma" min="0.5" max="5.0" step="0.1" value="1.0">
+                <span id="sharpenSigmaValue">1.0</span>
+            </label>
+        </div>
 
-            uploadArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
+        <!-- 黑白处理参数 -->
+        <div id="blackWhiteParams" class="param-group" style="display: none;">
+            <label>二值化方法:
+                <select id="blackWhiteMethod">
+                    <option value="adaptive">自适应阈值</option>
+                    <option value="otsu">大津算法</option>
+                    <option value="simple">简单阈值</option>
+                </select>
+            </label>
+            <label id="thresholdLabel" style="display: none;">
+                阈值: <input type="range" id="blackWhiteThreshold" min="0" max="255" value="127">
+                <span id="blackWhiteThresholdValue">127</span>
+            </label>
+            <label id="blockSizeLabel">
+                块大小: <input type="range" id="blackWhiteBlockSize" min="3" max="31" step="2" value="11">
+                <span id="blackWhiteBlockSizeValue">11</span>
+            </label>
+            <label id="cLabel">
+                常数C: <input type="range" id="blackWhiteC" min="0" max="10" value="2">
+                <span id="blackWhiteCValue">2</span>
+            </label>
+            <label>
+                <input type="checkbox" id="applyMorphology"> 应用形态学操作
+            </label>
+        </div>
 
-                if (e.dataTransfer.files.length > 0) {
-                    handleFileSelection(e.dataTransfer.files[0]);
-                }
-            });
+        <!-- 增强处理参数 -->
+        <div id="enhanceParams" class="param-group" style="display: none;">
+            <label>对比度限制: <input type="range" id="enhanceClipLimit" min="1.0" max="10.0" step="0.5" value="3.0">
+                <span id="enhanceClipLimitValue">3.0</span>
+            </label>
+            <label>网格大小: <input type="range" id="enhanceTileGridSize" min="2" max="16" step="2" value="8">
+                <span id="enhanceTileGridSizeValue">8</span>
+            </label>
+            <label>亮度: <input type="range" id="enhanceBrightness" min="0.5" max="2.0" step="0.1" value="1.0">
+                <span id="enhanceBrightnessValue">1.0</span>
+            </label>
+            <label>对比度: <input type="range" id="enhanceContrast" min="0.5" max="2.0" step="0.1" value="1.0">
+                <span id="enhanceContrastValue">1.0</span>
+            </label>
+            <label>
+                <input type="checkbox" id="sharpenAfterEnhance"> 增强后锐化
+            </label>
+        </div>
+    </div>
 
-            // 提交按钮点击事件
-            submitBtn.addEventListener('click', function() {
-                if (fileInput.files.length > 0) {
-                    uploadFile(fileInput.files[0]);
-                }
-            });
+    <div class="processing-buttons" style="display: flex; gap: 10px; flex-wrap: wrap; margin: 15px 0;">
+        <button class="btn" onclick="processImage('grayscale')">灰度处理</button>
+        <button class="btn" onclick="processImage('sharpen')">锐化处理</button>
+        <button class="btn" onclick="processImage('blackWhite')">黑白处理</button>
+        <button class="btn" onclick="processImage('enhance')">增强处理</button>
+    </div>
 
-            // 处理文件选择
-            function handleFileSelection(file) {
-                // 检查文件类型
-                const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-                if (!allowedTypes.includes(file.type)) {
-                    alert('错误：请选择 JPEG 或 PNG 格式的图片文件');
-                    return;
-                }
+    <div class="processing-result" style="display: none;" id="processingResult">
+        <h3>处理结果</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+                <h4>原始图片</h4>
+                <img id="originalProcessImage" style="max-width: 100%; max-height: 300px;">
+            </div>
+            <div>
+                <h4>处理结果</h4>
+                <img id="processedImage" style="max-width: 100%; max-height: 300px;">
+            </div>
+        </div>
+        <div id="processingInfo" style="margin-top: 15px; padding: 10px; background: #f5f5f5; border-radius: 5px;"></div>
+    </div>
+</div>
 
-                // 检查文件大小
-                const maxSize = 10 * 1024 * 1024; // 10MB
-                if (file.size > maxSize) {
-                    alert('错误：文件大小超过限制（最大10MB）');
-                    return;
-                }
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const previewImage = document.getElementById('previewImage');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+        const resultImage = document.getElementById('resultImage');
+        const resultPlaceholder = document.getElementById('resultPlaceholder');
+        const resultInfo = document.getElementById('resultInfo');
 
-                // 显示文件信息
-                fileName.textContent = file.name;
-                fileSize.textContent = formatFileSize(file.size);
-                fileInfo.style.display = 'block';
+        // 点击上传区域触发文件选择
+        uploadBtn.addEventListener('click', function () {
+            fileInput.click();
+        });
 
-                // 启用提交按钮
-                submitBtn.disabled = false;
+        // 文件选择变化事件
+        fileInput.addEventListener('change', function (e) {
+            if (this.files.length > 0) {
+                handleFileSelection(this.files[0]);
+            }
+        });
 
-                // 显示图片预览
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    previewImage.style.display = 'block';
-                    previewPlaceholder.style.display = 'none';
+        // 拖拽事件处理
+        uploadArea.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
 
-                    // 清空之前的结果
-                    resultImage.style.display = 'none';
-                    resultPlaceholder.style.display = 'block';
-                    resultInfo.style.display = 'none';
-                };
-                reader.readAsDataURL(file);
+        uploadArea.addEventListener('dragleave', function () {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', function (e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+
+            if (e.dataTransfer.files.length > 0) {
+                handleFileSelection(e.dataTransfer.files[0]);
+            }
+        });
+
+        // 提交按钮点击事件
+        submitBtn.addEventListener('click', function () {
+            if (fileInput.files.length > 0) {
+                uploadFile(fileInput.files[0]);
+            }
+        });
+
+        // 处理文件选择
+        function handleFileSelection(file) {
+            // 检查文件类型
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('错误：请选择 JPEG 或 PNG 格式的图片文件');
+                return;
             }
 
-            // 上传文件
-            function uploadFile(file) {
-                const formData = new FormData();
-                formData.append('image', file);
+            // 检查文件大小
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            if (file.size > maxSize) {
+                alert('错误：文件大小超过限制（最大10MB）');
+                return;
+            }
 
-                // 显示加载状态
-                resultInfo.style.display = 'block';
-                resultInfo.className = 'result-info result-loading';
-                resultInfo.innerHTML = '<h3>扫描中...</h3><p>正在处理您的图片，请稍候</p>';
-                submitBtn.disabled = true;
+            // 显示文件信息
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileInfo.style.display = 'block';
 
-                // 发送请求
-                fetch('/api/scan/', {
-                    method: 'POST',
-                    body: formData
-                })
+            // 启用提交按钮
+            submitBtn.disabled = false;
+
+            // 显示图片预览
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                previewPlaceholder.style.display = 'none';
+
+                // 清空之前的结果
+                resultImage.style.display = 'none';
+                resultPlaceholder.style.display = 'block';
+                resultInfo.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 上传文件
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            // 显示加载状态
+            resultInfo.style.display = 'block';
+            resultInfo.className = 'result-info result-loading';
+            resultInfo.innerHTML = '<h3>扫描中...</h3><p>正在处理您的图片，请稍候</p>';
+            submitBtn.disabled = true;
+
+            // 发送请求
+            fetch('/api/scan/', {
+                method: 'POST',
+                body: formData
+            })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -421,72 +566,226 @@
                 .finally(() => {
                     submitBtn.disabled = false;
                 });
+        }
+
+        // 显示成功结果
+        function displaySuccessResult(data) {
+            resultInfo.className = 'result-info result-success';
+
+            let resultHTML = `<h3>扫描成功</h3>`;
+            resultHTML += `<p>${data.message}</p>`;
+            // 显示识别后的图片
+            if (data.data) {
+                resultImage.src = 'data:image/jpeg;base64,' + data.data;
+                resultImage.style.display = 'block';
+                resultPlaceholder.style.display = 'none';
             }
 
-            // 显示成功结果
-            function displaySuccessResult(data) {
-                resultInfo.className = 'result-info result-success';
+            resultInfo.innerHTML = resultHTML;
+        }
 
-                let resultHTML = `<h3>扫描成功</h3>`;
-                resultHTML += `<p>${data.message}</p>
-                <p>device:${data.data.device}</p>
-                <p>document_detected:${data.data.document_detected}</p>
-                <p>image_size:${JSON.stringify(data.data.image_size)}</p>
-                <p>model_type:${data.data.model_type}</p>
-                <p>success:${data.data.success}</p>
-`;
-
-                if (data.data && data.data.document_detected) {
-                    resultHTML += `<p><strong>文档检测结果：</strong>检测到文档区域</p>`;
-
-                    if (data.data.detections && data.data.detections.length > 0) {
-                        resultHTML += `<h4>检测到 ${data.data.detections.length} 个目标</h4>`;
-
-                        data.data.detections.forEach((detection, index) => {
-                            resultHTML += `
-                                <div class="detection-item">
-                                    <div class="detection-header">
-                                        <strong>目标 ${index + 1}</strong>
-                                        <span class="confidence">置信度: ${(detection.confidence * 100).toFixed(2)}%</span>
-                                    </div>
-                                    <p>位置: (${detection.x1.toFixed(1)}, ${detection.y1.toFixed(1)}) - (${detection.x2.toFixed(1)}, ${detection.y2.toFixed(1)})</p>
-                                    <p>类别: ${detection.class}</p>
-                                </div>
-                            `;
-                        });
-                    }
-                } else {
-                    resultHTML += `<p><strong>文档检测结果：</strong>未检测到文档区域</p>`;
-                }
-
-                // 显示识别后的图片
-                if (data.data && data.data.result_image) {
-                    resultImage.src = 'data:image/jpeg;base64,' + data.data.result_image;
-                    resultImage.style.display = 'block';
-                    resultPlaceholder.style.display = 'none';
-                }
-
-                resultInfo.innerHTML = resultHTML;
-            }
-
-            // 显示错误结果
-            function displayErrorResult(message) {
-                resultInfo.className = 'result-info result-error';
-                resultInfo.innerHTML = `
+        // 显示错误结果
+        function displayErrorResult(message) {
+            resultInfo.className = 'result-info result-error';
+            resultInfo.innerHTML = `
                     <h3>扫描失败</h3>
                     <p>${message}</p>
                 `;
-            }
+        }
 
-            // 格式化文件大小
-            function formatFileSize(bytes) {
-                if (bytes === 0) return '0 Bytes';
-                const k = 1024;
-                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-                const i = Math.floor(Math.log(bytes) / Math.log(k));
-                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-            }
-        });
-    </script>
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    });
+</script>
+
+<script>
+let currentProcessImage = null;
+
+// 文件选择事件
+document.getElementById('processFileInput').addEventListener('change', function(e) {
+    if (this.files.length > 0) {
+        const file = this.files[0];
+        const fileInfo = document.getElementById('processFileInfo');
+        fileInfo.innerHTML = `已选择: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+
+        // 显示预览
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            currentProcessImage = e.target.result;
+            document.getElementById('originalProcessImage').src = currentProcessImage;
+            document.getElementById('processingResult').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// 参数控制逻辑
+function showParams(processType) {
+    // 隐藏所有参数组
+    document.querySelectorAll('.param-group').forEach(group => {
+        group.style.display = 'none';
+    });
+
+    // 显示对应参数组
+    document.getElementById(processType + 'Params').style.display = 'block';
+}
+
+// 锐化参数控制
+document.getElementById('sharpenIntensity').addEventListener('input', function() {
+    document.getElementById('sharpenIntensityValue').textContent = this.value;
+});
+document.getElementById('useUnsharpMask').addEventListener('change', function() {
+    document.getElementById('sigmaLabel').style.display = this.checked ? 'block' : 'none';
+});
+document.getElementById('sharpenSigma').addEventListener('input', function() {
+    document.getElementById('sharpenSigmaValue').textContent = this.value;
+});
+
+// 黑白处理参数控制
+document.getElementById('blackWhiteMethod').addEventListener('change', function() {
+    const isSimple = this.value === 'simple';
+    const isAdaptive = this.value === 'adaptive';
+
+    document.getElementById('thresholdLabel').style.display = isSimple ? 'block' : 'none';
+    document.getElementById('blockSizeLabel').style.display = isAdaptive ? 'block' : 'none';
+    document.getElementById('cLabel').style.display = isAdaptive ? 'block' : 'none';
+});
+document.getElementById('blackWhiteThreshold').addEventListener('input', function() {
+    document.getElementById('blackWhiteThresholdValue').textContent = this.value;
+});
+document.getElementById('blackWhiteBlockSize').addEventListener('input', function() {
+    document.getElementById('blackWhiteBlockSizeValue').textContent = this.value;
+});
+document.getElementById('blackWhiteC').addEventListener('input', function() {
+    document.getElementById('blackWhiteCValue').textContent = this.value;
+});
+
+// 增强处理参数控制
+document.getElementById('enhanceClipLimit').addEventListener('input', function() {
+    document.getElementById('enhanceClipLimitValue').textContent = this.value;
+});
+document.getElementById('enhanceTileGridSize').addEventListener('input', function() {
+    document.getElementById('enhanceTileGridSizeValue').textContent = this.value;
+});
+document.getElementById('enhanceBrightness').addEventListener('input', function() {
+    document.getElementById('enhanceBrightnessValue').textContent = this.value;
+});
+document.getElementById('enhanceContrast').addEventListener('input', function() {
+    document.getElementById('enhanceContrastValue').textContent = this.value;
+});
+
+// 处理图像
+function processImage(processType) {
+    if (!currentProcessImage) {
+        alert('请先选择图片');
+        return;
+    }
+
+    // 显示对应参数
+    showParams(processType);
+
+    const resultDiv = document.getElementById('processingResult');
+    const processedImg = document.getElementById('processedImage');
+    const infoDiv = document.getElementById('processingInfo');
+
+    // 显示加载状态
+    processedImg.src = '';
+    infoDiv.innerHTML = '处理中...';
+
+    // 根据处理类型构建参数
+    let params = {};
+    switch(processType) {
+        case 'grayscale':
+            params = {
+                method: document.getElementById('grayscaleMethod').value
+            };
+            break;
+        case 'sharpen':
+            params = {
+                intensity: parseFloat(document.getElementById('sharpenIntensity').value),
+                use_unsharp_mask: document.getElementById('useUnsharpMask').checked,
+                sigma: parseFloat(document.getElementById('sharpenSigma').value)
+            };
+            break;
+        case 'blackWhite':
+            params = {
+                method: document.getElementById('blackWhiteMethod').value,
+                threshold: parseInt(document.getElementById('blackWhiteThreshold').value),
+                block_size: parseInt(document.getElementById('blackWhiteBlockSize').value),
+                c: parseInt(document.getElementById('blackWhiteC').value),
+                apply_morphology: document.getElementById('applyMorphology').checked,
+                kernel_size: 3
+            };
+            break;
+        case 'enhance':
+            params = {
+                clip_limit: parseFloat(document.getElementById('enhanceClipLimit').value),
+                tile_grid_size: parseInt(document.getElementById('enhanceTileGridSize').value),
+                brightness: parseFloat(document.getElementById('enhanceBrightness').value),
+                contrast: parseFloat(document.getElementById('enhanceContrast').value),
+                sharpen_after_enhance: document.getElementById('sharpenAfterEnhance').checked
+            };
+            break;
+    }
+
+    // 根据处理类型选择API端点
+    let apiUrl = '';
+    switch(processType) {
+        case 'grayscale':
+            apiUrl = '/api/grayscale/';
+            break;
+        case 'sharpen':
+            apiUrl = '/api/sharpen/';
+            break;
+        case 'blackWhite':
+            apiUrl = '/api/black-white/';
+            break;
+        case 'enhance':
+            apiUrl = '/api/enhance/';
+            break;
+        default:
+            alert('未知的处理类型');
+            return;
+    }
+
+    // 发送请求
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            image: currentProcessImage,
+            params: params
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            processedImg.src = data.processed_image;
+            infoDiv.innerHTML = `
+                <strong>处理类型:</strong> ${data.process_type}<br>
+                <strong>处理时间:</strong> ${(data.processing_time * 1000).toFixed(2)} ms<br>
+                <strong>原始尺寸:</strong> ${data.original_size[0]} × ${data.original_size[1]}<br>
+                <strong>处理尺寸:</strong> ${data.processed_size[0]} × ${data.processed_size[1]}<br>
+                <strong>时间戳:</strong> ${new Date(data.timestamp * 1000).toLocaleString()}
+            `;
+        } else {
+            infoDiv.innerHTML = `<span style="color: red;">处理失败: ${data.error}</span>`;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        infoDiv.innerHTML = `<span style="color: red;">请求失败: ${error.message}</span>`;
+    });
+}
+</script>
+
 </body>
 </html>

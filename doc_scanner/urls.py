@@ -24,5 +24,9 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('', views.index, name='index'),
     path('api/scan/', views.document_scan, name='scan_document'),
+    path('api/grayscale/', views.process_grayscale_api, name='grayscale'),
+    path('api/sharpen/', views.process_sharpen_api, name='sharpen'),
+    path('api/black-white/', views.process_black_white_api, name='black_white'),
+    path('api/enhance/', views.process_enhance_api, name='enhance'),
     path('api/health/', views.health_check, name='health_check'),
 ]
