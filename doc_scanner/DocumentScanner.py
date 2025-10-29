@@ -90,7 +90,7 @@ class DocumentScanner:
             results = self.model.predict(image_path, device=self.device)
             result = results[0]
             mask = None
-            # 提取文档 mask（假设只有一个文档对象）
+            # 提取文档 mask
             for box in result.boxes:
                 cls_id = int(box.cls[0])
                 name = result.names[cls_id]
@@ -109,7 +109,6 @@ class DocumentScanner:
 
         except Exception as e:
             logger.error(f"YOLO 检测失败: {str(e)}")
-            # 如果 YOLO 失败，回退到 OpenCV
             return "Error!" + str(e)
 
 
