@@ -428,7 +428,13 @@
                 resultInfo.className = 'result-info result-success';
 
                 let resultHTML = `<h3>扫描成功</h3>`;
-                resultHTML += `<p>${data.message}</p>`;
+                resultHTML += `<p>${data.message}</p>
+                <p>device:${data.data.device}</p>
+                <p>document_detected:${data.data.document_detected}</p>
+                <p>image_size:${JSON.stringify(data.data.image_size)}</p>
+                <p>model_type:${data.data.model_type}</p>
+                <p>success:${data.data.success}</p>
+`;
 
                 if (data.data && data.data.document_detected) {
                     resultHTML += `<p><strong>文档检测结果：</strong>检测到文档区域</p>`;
