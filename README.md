@@ -18,9 +18,6 @@
    pip install -r requirements.txt
    ```
 
-3. 准备模型文件：
-    - 将预训练的`yolo11s-seg.pt`模型文件放在项目根目录
-
 ## 使用方法
 
 1. 启动开发服务器：
@@ -29,15 +26,8 @@
    ```
 
 2. 访问Web界面：
-    - 打开浏览器，访问 `http://localhost:8000/api/`
+    - 打开浏览器，访问 `http://localhost:8000`
     - 上传图片并点击"扫描文档"按钮
-
-3. API接口使用：
-    - 扫描接口：`POST /api/scan/`
-        - 请求体：JSON格式，包含base64编码的图片
-        - 响应：JSON格式，包含检测结果
-    - 健康检查接口：`GET /api/health/`
-        - 响应：包含服务和模型状态信息
 
 ## 功能测试页面
 
@@ -49,8 +39,9 @@
 
 #### 请求
 
-接口：`POST`方法 路径： [`/api/scan`](#文档识别)
-form-data
+接口：[`POST /api/scan`](#文档识别)
+
+请求体：form-data格式
 
 ```json
 {
@@ -72,10 +63,11 @@ form-data
 
 #### 请求
 
-接口：`POST`方法 路径： [`/api/grayscale`](#灰度处理)
+接口：[`POST /api/grayscale`](#灰度处理)
 
 ```json
 {
+  
 }
 ```
 
@@ -89,10 +81,11 @@ form-data
 
 #### 请求
 
-接口：`POST`方法 路径： [`/api/enhance`](#增强处理)
+接口：[`POST /api/enhance`](#增强处理)
 
 ```json
 {
+  
 }
 ```
 
@@ -100,16 +93,18 @@ form-data
 
 ```json
 {
+  
 }
 ```
 ### 锐化处理
 
 #### 请求
 
-接口：`POST`方法 路径： [`/api/sharpen`](#锐化处理)
+接口：[`POST /api/sharpen`](#锐化处理)
 
 ```json
 {
+  
 }
 ```
 
@@ -117,16 +112,18 @@ form-data
 
 ```json
 {
+  
 }
 ```
 ### 黑白处理
 
 #### 请求
 
-接口：`POST`方法 路径： [`/api/black-white`](#黑白处理)
+接口：[`POST /api/black-white`](#黑白处理)
 
 ```json
 {
+  
 }
 ```
 
@@ -134,6 +131,7 @@ form-data
 
 ```json
 {
+  
 }
 ```
 
