@@ -5,6 +5,8 @@ import os
 import cv2
 import numpy as np
 
+import torch
+
 # 设置日志
 logger = logging.getLogger(__name__)
 
@@ -15,7 +17,6 @@ class DocumentScanner:
         初始化文档扫描模型
         """
         self.model = None
-        self.model_type = None
         self.device = 'cpu'  # 默认使用 CPU
         self.load_model(model_path)
 
@@ -33,8 +34,6 @@ class DocumentScanner:
             # 尝试导入 ultralytics (YOLOv8/v11)
             try:
                 from ultralytics import YOLO
-                import torch
-
                 # 检查 CUDA 是否可用
                 if torch.cuda.is_available():
                     self.device = 'cuda'
@@ -46,7 +45,6 @@ class DocumentScanner:
                 # 加载模型并指定设备
                 self.model = YOLO(model_path)
                 self.model.to(self.device)
-                self.model_type = "yolo"
                 logger.info(f"YOLO模型加载成功: {model_path}，使用设备: {self.device}")
 
             except ImportError:
@@ -61,7 +59,6 @@ class DocumentScanner:
                     from ultralytics import YOLO
                     self.model = YOLO(model_path)
                     self.model.to('cpu')
-                    self.model_type = "yolo"
                     self.device = 'cpu'
                     logger.info(f"YOLO模型在 CPU 上加载成功: {model_path}")
                 except Exception as e2:
@@ -73,179 +70,111 @@ class DocumentScanner:
             logger.error(f"模型加载失败: {str(e)}")
             self.model = "opencv_fallback"
 
-    def preprocess_image(self, image_path):
-        """
-        图像预处理
-        """
-        try:
-            image = cv2.imread(image_path)
-            if image is None:
-                raise ValueError("无法读取图像文件")
-            return image
-        except Exception as e:
-            logger.error(f"图像预处理失败: {str(e)}")
-            raise
 
-    def detect_document(self, image):
+    def detect_document(self, image_path):
         """
         使用 YOLO 模型进行文档检测
         """
         try:
-            if self.model_type == "yolo":
-                return self.detect_document_yolo(image)
-            else:
-                return self.detect_document_opencv(image)
+            return self.detect_document_yolo(image_path)
         except Exception as e:
             logger.error(f"文档检测失败: {str(e)}")
             raise
 
-    def detect_document_yolo(self, image):
+    def detect_document_yolo(self, image_path):
         """
         使用 YOLO 模型进行文档检测
         """
         try:
             # 使用 YOLO 模型进行预测
-            results = self.model(image, device=self.device)
+            results = self.model.predict(image_path, device=self.device)
+            result = results[0]
+            mask = None
+            # 提取文档 mask（假设只有一个文档对象）
+            for box in result.boxes:
+                cls_id = int(box.cls[0])
+                name = result.names[cls_id]
+                if name == 'document' or len(result.masks.data) > 0:
+                    mask = result.masks.data[0].cpu().numpy()
+                    break
 
-            # 处理检测结果
-            document_detected = False
-            boxes = []
-            masks = []
+            if mask is None:
+                raise ValueError("未检测到文档区域，请检查模型或输入图像。")
 
-            # 创建结果图像的副本
-            result_image = image.copy()
+            # 转为 OpenCV 格式二值图
+            mask = (mask * 255).astype(np.uint8)
+            mask = cv2.resize(mask, (result.orig_shape[1], result.orig_shape[0]))
+            image = cv2.imread(image_path)
+            return image, mask
 
-            for result in results:
-                # 获取边界框
-                if result.boxes is not None:
-                    for box in result.boxes:
-                        x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()
-                        conf = box.conf[0].cpu().numpy()
-                        cls = int(box.cls[0].cpu().numpy())
-
-                        boxes.append({
-                            "x1": float(x1),
-                            "y1": float(y1),
-                            "x2": float(x2),
-                            "y2": float(y2),
-                            "confidence": float(conf),
-                            "class": cls
-                        })
-                        document_detected = True
-
-                        # 在图像上绘制检测框
-                        cv2.rectangle(result_image,
-                                      (int(x1), int(y1)),
-                                      (int(x2), int(y2)),
-                                      (0, 255, 0), 2)
-
-                        # 添加置信度标签
-                        label = f"Doc: {conf:.2f}"
-                        label_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)[0]
-                        cv2.rectangle(result_image,
-                                      (int(x1), int(y1) - label_size[1] - 10),
-                                      (int(x1) + label_size[0], int(y1)),
-                                      (0, 255, 0), -1)
-                        cv2.putText(result_image, label,
-                                    (int(x1), int(y1) - 5),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
-
-                # 获取分割掩码（如果模型支持分割）
-                if hasattr(result, 'masks') and result.masks is not None:
-                    for mask in result.masks:
-                        # 将掩码点转换为整数坐标
-                        mask_points = np.array(mask.xy[0], dtype=np.int32)
-                        masks.append(mask_points.tolist())
-
-                        # 在图像上绘制分割轮廓
-                        cv2.polylines(result_image, [mask_points], True, (255, 0, 0), 2)
-
-            # 将结果图像编码为Base64
-            _, buffer = cv2.imencode('.jpg', result_image)
-            result_image_base64 = base64.b64encode(buffer).decode('utf-8')
-
-            result_data = {
-                "success": True,
-                "document_detected": document_detected,
-                "detections": boxes,
-                "masks": masks,
-                "result_image": result_image_base64,
-                "model_type": "yolo",
-                "device": self.device,
-                "image_size": {
-                    "width": image.shape[1],
-                    "height": image.shape[0]
-                }
-            }
-
-            return result_data
         except Exception as e:
             logger.error(f"YOLO 检测失败: {str(e)}")
             # 如果 YOLO 失败，回退到 OpenCV
-            return self.detect_document_opencv(image)
+            return "Error!" + str(e)
 
-    def detect_document_opencv(self, image):
-        """
-        使用OpenCV进行文档检测（备用方法）
-        """
-        try:
-            # 创建结果图像的副本
-            result_image = image.copy()
 
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-            edged = cv2.Canny(blurred, 50, 150)
+    def order_points(self, pts):
+        rect = np.zeros((4, 2), dtype="float32")
+        s = pts.sum(axis=1)
+        rect[0] = pts[np.argmin(s)]
+        rect[2] = pts[np.argmax(s)]
+        diff = np.diff(pts, axis=1)
+        rect[1] = pts[np.argmin(diff)]
+        rect[3] = pts[np.argmax(diff)]
+        return rect
 
-            # 查找轮廓
-            contours, _ = cv2.findContours(edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-            contours = sorted(contours, key=cv2.contourArea, reverse=True)[:5]
+    def get_document_corners(self, mask):
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contour = max(contours, key=cv2.contourArea)
 
-            # 寻找文档轮廓
-            document_contour = None
-            for contour in contours:
-                peri = cv2.arcLength(contour, True)
-                approx = cv2.approxPolyDP(contour, 0.02 * peri, True)
+        epsilon = 0.02 * cv2.arcLength(contour, True)
+        approx = cv2.approxPolyDP(contour, epsilon, True)
 
-                if len(approx) == 4:
-                    document_contour = approx
-                    break
+        if len(approx) == 4:
+            corners = approx.reshape(4, 2)
+        else:
+            rect = cv2.minAreaRect(contour)
+            corners = cv2.boxPoints(rect)
+            # 修复：使用 np.int32 替代已弃用的 np.int0
+            corners = np.int32(corners)
 
-            # 在图像上绘制检测到的轮廓
-            if document_contour is not None:
-                cv2.drawContours(result_image, [document_contour], -1, (0, 255, 0), 3)
+        return self.order_points(corners)
 
-                # 添加标签
-                cv2.putText(result_image, "Document Detected",
-                            (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    def perspective_correction(self, image, corners):
+        width = int(max(
+            np.linalg.norm(corners[0] - corners[1]),
+            np.linalg.norm(corners[2] - corners[3])
+        ))
+        height = int(max(
+            np.linalg.norm(corners[0] - corners[3]),
+            np.linalg.norm(corners[1] - corners[2])
+        ))
 
-            # 将结果图像编码为Base64
-            _, buffer = cv2.imencode('.jpg', result_image)
-            result_image_base64 = base64.b64encode(buffer).decode('utf-8')
+        dst_pts = np.array([
+            [0, 0],
+            [width - 1, 0],
+            [width - 1, height - 1],
+            [0, height - 1]
+        ], dtype="float32")
 
-            result = {
-                "success": True,
-                "document_detected": document_contour is not None,
-                "result_image": result_image_base64,
-                "model_type": "opencv_fallback",
-                "device": "cpu",
-                "image_size": {
-                    "width": image.shape[1],
-                    "height": image.shape[0]
-                }
-            }
-
-            return result
-        except Exception as e:
-            logger.error(f"OpenCV 检测失败: {str(e)}")
-            raise
+        M = cv2.getPerspectiveTransform(corners, dst_pts)
+        warped = cv2.warpPerspective(image, M, (width, height))
+        ret, buffer = cv2.imencode('.jpg', warped)
+        img_bytes = buffer.tobytes()
+        base64_str = base64.b64encode(img_bytes).decode('utf-8')
+        return base64_str
 
     def scan_document(self, image_path):
         """
         主扫描函数
         """
         try:
-            image = self.preprocess_image(image_path)
-            result = self.detect_document(image)
+            # 1. 检测文档
+            image, mask = self.detect_document(image_path)
+
+            # 2. 提取角点并透视校正
+            corners = self.get_document_corners(mask)
+            result = self.perspective_correction(image, corners)
 
             return {
                 "status": "success",
