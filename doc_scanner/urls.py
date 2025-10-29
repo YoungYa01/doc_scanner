@@ -22,7 +22,7 @@ from doc_scanner import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('api/index', views.index, name='index'),
+    path('', views.index, name='index'),
     path('api/scan/', views.document_scan, name='scan_document'),
     path('api/health/', views.health_check, name='health_check'),
 ]
