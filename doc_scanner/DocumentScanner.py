@@ -215,7 +215,7 @@ class DocumentScanner:
             return {
                 "status": "success",
                 "message": "文档扫描完成",
-                "data": result,
+                "data": f"data:image/jpeg;base64,{result}",
                 "document_detected": True
             }
 
