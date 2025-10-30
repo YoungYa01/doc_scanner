@@ -35,11 +35,37 @@
 
 ## API响应格式
 
-### 文档识别
+### 文档识别1
 
 #### 请求
 
-接口：[`POST /api/scan`](#文档识别)
+接口：[`POST /doc_scan/scan`](#文档识别)
+
+请求体：form-data格式
+
+```json
+{
+  "image": "Image File"
+}
+```
+
+#### 响应
+
+```json
+{
+  "data": "Image Base64",
+  "message": "文档扫描完成",
+  "status": "success"
+}
+```
+
+### 文档识别2
+
+这个效果优于上一个接口，但依旧存在识别幻觉
+
+#### 请求
+
+接口：[`POST /doc_scan/scanner`](#文档识别)
 
 请求体：form-data格式
 
@@ -63,7 +89,7 @@
 
 #### 请求
 
-接口：[`POST /api/grayscale`](#灰度处理)
+接口：[`POST /doc_scan/grayscale`](#灰度处理)
 
 ```json
 {
@@ -81,7 +107,7 @@
 
 #### 请求
 
-接口：[`POST /api/enhance`](#增强处理)
+接口：[`POST /doc_scan/enhance`](#增强处理)
 
 ```json
 {
@@ -100,7 +126,7 @@
 
 #### 请求
 
-接口：[`POST /api/sharpen`](#锐化处理)
+接口：[`POST /doc_scan/sharpen`](#锐化处理)
 
 ```json
 {
@@ -119,7 +145,7 @@
 
 #### 请求
 
-接口：[`POST /api/black-white`](#黑白处理)
+接口：[`POST /doc_scan/black-white`](#黑白处理)
 
 ```json
 {
