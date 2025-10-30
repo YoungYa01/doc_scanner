@@ -26,12 +26,12 @@
    ```
 
 2. 访问Web界面：
-    - 打开浏览器，访问 `http://localhost:5006`
+    - 打开浏览器，访问 `http://localhost:8000`
     - 上传图片并点击"扫描文档"按钮
 
 ## 功能测试页面
 
-访问 [`http://localhost:5006`](http://localhost:5006) 即可
+访问 [`http://localhost:8000`](http://localhost:8000) 即可
 
 ## API响应格式
 
