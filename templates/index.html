@@ -542,7 +542,7 @@
             submitBtn.disabled = true;
 
             // 发送请求
-            fetch('http://117.50.174.253:5006/doc_scan/scan', {
+            fetch('/doc_scan/scanner', {
                 method: 'POST',
                 body: formData
             })
@@ -576,7 +576,7 @@
             resultHTML += `<p>${data.message}</p>`;
             // 显示识别后的图片
             if (data.data) {
-                resultImage.src = 'data:image/jpeg;base64,' + data.data;
+                resultImage.src = data.data;
                 resultImage.style.display = 'block';
                 resultPlaceholder.style.display = 'none';
             }
