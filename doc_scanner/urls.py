@@ -20,7 +20,7 @@ from django.urls import path, include
 from doc_scanner import views
 
 urlpatterns = [
-    path('example', views.index, name='example'),
+    path('doc_scan/example', views.index, name='example'),
     path('doc_scan/scan', views.document_scan, name='scan_document'),
     path('doc_scan/scanner', views.document_scan_tf, name='scan_document'),
     path('doc_scan/grayscale', views.process_grayscale_api, name='grayscale'),
