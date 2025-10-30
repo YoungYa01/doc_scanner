@@ -21,10 +21,10 @@ from doc_scanner import views
 
 urlpatterns = [
     path('example', views.index, name='example'),
-    path('doc_scan/scan/', views.document_scan, name='scan_document'),
-    path('doc_scan/grayscale/', views.process_grayscale_api, name='grayscale'),
-    path('doc_scan/sharpen/', views.process_sharpen_api, name='sharpen'),
-    path('doc_scan/black-white/', views.process_black_white_api, name='black_white'),
-    path('doc_scan/enhance/', views.process_enhance_api, name='enhance'),
-    path('doc_scan/health/', views.health_check, name='health_check'),
+    path('doc_scan/scan', views.document_scan, name='scan_document'),
+    path('doc_scan/grayscale', views.process_grayscale_api, name='grayscale'),
+    path('doc_scan/sharpen', views.process_sharpen_api, name='sharpen'),
+    path('doc_scan/black-white', views.process_black_white_api, name='black_white'),
+    path('doc_scan/enhance', views.process_enhance_api, name='enhance'),
+    path('doc_scan/health', views.health_check, name='health_check'),
 ]

@@ -204,7 +204,7 @@ class DocumentScanner:
                 return {
                     "status": "success",
                     "message": "未检测到文档区域，返回原始图像",
-                    "data": base64_str,
+                    "data": f"data:image/jpeg;base64,{base64_str}",
                     "document_detected": False
                 }
 
