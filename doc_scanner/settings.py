@@ -18,6 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # 模型路径配置
 MODEL_DIR = os.path.join(BASE_DIR, 'models')
 DOCUMENT_SCANNER_MODEL_PATH = os.path.join(MODEL_DIR, 'yolo11s-seg.pt')
+DOCUMENT_SCANNER_TF_MODEL_PATH = os.path.join(MODEL_DIR, 'frozen_model.pb')
 
 # 确保模型目录存在
 os.makedirs(MODEL_DIR, exist_ok=True)
