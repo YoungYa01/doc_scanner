@@ -15,18 +15,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.contrib import admin
 from django.urls import path, include
 
 from doc_scanner import views
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path('', views.index, name='index'),
-    path('api/scan/', views.document_scan, name='scan_document'),
-    path('api/grayscale/', views.process_grayscale_api, name='grayscale'),
-    path('api/sharpen/', views.process_sharpen_api, name='sharpen'),
-    path('api/black-white/', views.process_black_white_api, name='black_white'),
-    path('api/enhance/', views.process_enhance_api, name='enhance'),
-    path('api/health/', views.health_check, name='health_check'),
+    path('example', views.index, name='example'),
+    path('doc_scan/scan/', views.document_scan, name='scan_document'),
+    path('doc_scan/grayscale/', views.process_grayscale_api, name='grayscale'),
+    path('doc_scan/sharpen/', views.process_sharpen_api, name='sharpen'),
+    path('doc_scan/black-white/', views.process_black_white_api, name='black_white'),
+    path('doc_scan/enhance/', views.process_enhance_api, name='enhance'),
+    path('doc_scan/health/', views.health_check, name='health_check'),
 ]
