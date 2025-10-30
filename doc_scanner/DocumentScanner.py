@@ -70,7 +70,6 @@ class DocumentScanner:
             logger.error(f"模型加载失败: {str(e)}")
             self.model = "opencv_fallback"
 
-
     def detect_document(self, image_path):
         """
         使用 YOLO 模型进行文档检测
@@ -90,27 +89,37 @@ class DocumentScanner:
             results = self.model.predict(image_path, device=self.device)
             result = results[0]
             mask = None
-            # 提取文档 mask
-            for box in result.boxes:
-                cls_id = int(box.cls[0])
-                name = result.names[cls_id]
-                if name == 'document' or len(result.masks.data) > 0:
-                    mask = result.masks.data[0].cpu().numpy()
-                    break
+
+            # 读取原始图像
+            image = cv2.imread(image_path)
+
+            # 提取文档 mask（假设只有一个文档对象）
+            if hasattr(result, 'masks') and result.masks is not None and len(result.masks.data) > 0:
+                for box in result.boxes:
+                    cls_id = int(box.cls[0])
+                    name = result.names[cls_id]
+                    if name == 'document' or len(result.masks.data) > 0:
+                        mask = result.masks.data[0].cpu().numpy()
+                        break
 
             if mask is None:
-                raise ValueError("未检测到文档区域，请检查模型或输入图像。")
+                logger.warning("未检测到文档区域，返回原始图像")
+                # 返回原始图像和None标记
+                return image, None
 
             # 转为 OpenCV 格式二值图
             mask = (mask * 255).astype(np.uint8)
             mask = cv2.resize(mask, (result.orig_shape[1], result.orig_shape[0]))
-            image = cv2.imread(image_path)
             return image, mask
 
         except Exception as e:
             logger.error(f"YOLO 检测失败: {str(e)}")
-            return "Error!" + str(e)
-
+            # 如果 YOLO 失败，尝试返回原始图像
+            try:
+                image = cv2.imread(image_path)
+                return image, None
+            except:
+                return "Error!" + str(e)
 
     def order_points(self, pts):
         rect = np.zeros((4, 2), dtype="float32")
@@ -123,7 +132,13 @@ class DocumentScanner:
         return rect
 
     def get_document_corners(self, mask):
+        if mask is None:
+            return None
+
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if not contours:
+            return None
+
         contour = max(contours, key=cv2.contourArea)
 
         epsilon = 0.02 * cv2.arcLength(contour, True)
@@ -140,6 +155,13 @@ class DocumentScanner:
         return self.order_points(corners)
 
     def perspective_correction(self, image, corners):
+        if corners is None:
+            # 如果没有角点，直接返回原始图像
+            ret, buffer = cv2.imencode('.jpg', image)
+            img_bytes = buffer.tobytes()
+            base64_str = base64.b64encode(img_bytes).decode('utf-8')
+            return base64_str
+
         width = int(max(
             np.linalg.norm(corners[0] - corners[1]),
             np.linalg.norm(corners[2] - corners[3])
@@ -171,6 +193,21 @@ class DocumentScanner:
             # 1. 检测文档
             image, mask = self.detect_document(image_path)
 
+            # 检查是否成功检测到文档
+            if mask is None:
+                logger.info("未检测到文档区域，返回原始图像")
+                # 直接返回原始图像
+                ret, buffer = cv2.imencode('.jpg', image)
+                img_bytes = buffer.tobytes()
+                base64_str = base64.b64encode(img_bytes).decode('utf-8')
+
+                return {
+                    "status": "success",
+                    "message": "未检测到文档区域，返回原始图像",
+                    "data": base64_str,
+                    "document_detected": False
+                }
+
             # 2. 提取角点并透视校正
             corners = self.get_document_corners(mask)
             result = self.perspective_correction(image, corners)
@@ -178,13 +215,29 @@ class DocumentScanner:
             return {
                 "status": "success",
                 "message": "文档扫描完成",
-                "data": result
+                "data": result,
+                "document_detected": True
             }
 
         except Exception as e:
             logger.error(f"文档扫描失败: {str(e)}")
-            return {
-                "status": "error",
-                "message": f"文档扫描失败: {str(e)}",
-                "data": None
-            }
+            # 即使在异常情况下，也尝试返回原始图像
+            try:
+                image = cv2.imread(image_path)
+                ret, buffer = cv2.imencode('.jpg', image)
+                img_bytes = buffer.tobytes()
+                base64_str = base64.b64encode(img_bytes).decode('utf-8')
+
+                return {
+                    "status": "error",
+                    "message": f"文档扫描失败: {str(e)}，返回原始图像",
+                    "data": base64_str,
+                    "document_detected": False
+                }
+            except:
+                return {
+                    "status": "error",
+                    "message": f"文档扫描失败: {str(e)}",
+                    "data": None,
+                    "document_detected": False
+                }
