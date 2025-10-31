@@ -179,23 +179,18 @@ def document_scan_tf(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def process_grayscale_api(request):
-    """接口1：灰度处理 - 支持参数"""
+    """接口1：灰度处理 - 加权平均法"""
     try:
-        # 获取图像数据和参数
+        # 获取图像数据
         if request.content_type == 'application/json':
             data = json.loads(request.body)
             image_str = data.get('image', '')
-            params = data.get('params', {})
         else:
             if 'image' not in request.FILES:
                 return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
             uploaded_file = request.FILES['image']
             image_data = uploaded_file.read()
             image_str = base64.b64encode(image_data).decode('utf-8')
-            # 对于表单数据，可以尝试从请求中获取参数
-            params = {
-                'method': request.POST.get('method', 'average'),
-            }
 
         if not image_str:
             return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
@@ -206,8 +201,8 @@ def process_grayscale_api(request):
 
         image_data = base64.b64decode(image_str)
 
-        # 处理图像
-        result = process_image_base(image_data, process_grayscale, "grayscale", **params)
+        # 处理图像 - 不再传递参数，使用默认的加权平均法
+        result = process_image_base(image_data, process_grayscale, "grayscale")
 
         if result['success']:
             return JsonResponse(result)
@@ -225,24 +220,18 @@ def process_grayscale_api(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def process_sharpen_api(request):
-    """接口2：锐化处理 - 支持参数"""
+    """接口2：锐化处理 - USM锐化算法"""
     try:
-        # 获取图像数据和参数
+        # 获取图像数据
         if request.content_type == 'application/json':
             data = json.loads(request.body)
             image_str = data.get('image', '')
-            params = data.get('params', {})
         else:
             if 'image' not in request.FILES:
                 return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
             uploaded_file = request.FILES['image']
             image_data = uploaded_file.read()
             image_str = base64.b64encode(image_data).decode('utf-8')
-            params = {
-                'intensity': float(request.POST.get('intensity', 1.0)),
-                'use_unsharp_mask': request.POST.get('use_unsharp_mask', 'false').lower() == 'true',
-                'sigma': float(request.POST.get('sigma', 1.0)),
-            }
 
         if not image_str:
             return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
@@ -253,8 +242,8 @@ def process_sharpen_api(request):
 
         image_data = base64.b64decode(image_str)
 
-        # 处理图像
-        result = process_image_base(image_data, process_sharpen, "sharpen", **params)
+        # 处理图像 - 不再传递参数，使用默认的USM锐化算法
+        result = process_image_base(image_data, process_sharpen, "sharpen")
 
         if result['success']:
             return JsonResponse(result)
@@ -272,27 +261,18 @@ def process_sharpen_api(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def process_black_white_api(request):
-    """接口3：黑白处理 - 支持参数"""
+    """接口3：黑白处理 - 二值化算法"""
     try:
-        # 获取图像数据和参数
+        # 获取图像数据
         if request.content_type == 'application/json':
             data = json.loads(request.body)
             image_str = data.get('image', '')
-            params = data.get('params', {})
         else:
             if 'image' not in request.FILES:
                 return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
             uploaded_file = request.FILES['image']
             image_data = uploaded_file.read()
             image_str = base64.b64encode(image_data).decode('utf-8')
-            params = {
-                'method': request.POST.get('method', 'adaptive'),
-                'threshold': int(request.POST.get('threshold', 127)),
-                'block_size': int(request.POST.get('block_size', 11)),
-                'c': int(request.POST.get('c', 2)),
-                'apply_morphology': request.POST.get('apply_morphology', 'false').lower() == 'true',
-                'kernel_size': int(request.POST.get('kernel_size', 3)),
-            }
 
         if not image_str:
             return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
@@ -303,8 +283,8 @@ def process_black_white_api(request):
 
         image_data = base64.b64decode(image_str)
 
-        # 处理图像
-        result = process_image_base(image_data, process_black_white, "black_white", **params)
+        # 处理图像 - 不再传递参数，使用默认的二值化算法
+        result = process_image_base(image_data, process_black_white, "black_white")
 
         if result['success']:
             return JsonResponse(result)

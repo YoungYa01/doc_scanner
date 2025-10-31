@@ -344,56 +344,11 @@
     <div class="parameter-controls" style="margin: 15px 0; padding: 15px; background: #f9f9f9; border-radius: 5px;">
         <h3>处理参数</h3>
 
-        <!-- 灰度处理参数 -->
-        <div id="grayscaleParams" class="param-group" style="display: none;">
-            <label>灰度方法:
-                <select id="grayscaleMethod">
-                    <option value="average">平均值法</option>
-                    <option value="luminosity">亮度加权法</option>
-                    <option value="custom">自定义权重</option>
-                </select>
-            </label>
-        </div>
+        <!-- 灰度处理不再需要参数 -->
 
-        <!-- 锐化处理参数 -->
-        <div id="sharpenParams" class="param-group" style="display: none;">
-            <label>锐化强度: <input type="range" id="sharpenIntensity" min="0.1" max="3.0" step="0.1" value="1.0">
-                <span id="sharpenIntensityValue">1.0</span>
-            </label>
-            <label>
-                <input type="checkbox" id="useUnsharpMask"> 使用非锐化掩蔽
-            </label>
-            <label id="sigmaLabel" style="display: none;">
-                高斯模糊强度: <input type="range" id="sharpenSigma" min="0.5" max="5.0" step="0.1" value="1.0">
-                <span id="sharpenSigmaValue">1.0</span>
-            </label>
-        </div>
+        <!-- 锐化处理不再需要参数 -->
 
-        <!-- 黑白处理参数 -->
-        <div id="blackWhiteParams" class="param-group" style="display: none;">
-            <label>二值化方法:
-                <select id="blackWhiteMethod">
-                    <option value="adaptive">自适应阈值</option>
-                    <option value="otsu">大津算法</option>
-                    <option value="simple">简单阈值</option>
-                </select>
-            </label>
-            <label id="thresholdLabel" style="display: none;">
-                阈值: <input type="range" id="blackWhiteThreshold" min="0" max="255" value="127">
-                <span id="blackWhiteThresholdValue">127</span>
-            </label>
-            <label id="blockSizeLabel">
-                块大小: <input type="range" id="blackWhiteBlockSize" min="3" max="31" step="2" value="11">
-                <span id="blackWhiteBlockSizeValue">11</span>
-            </label>
-            <label id="cLabel">
-                常数C: <input type="range" id="blackWhiteC" min="0" max="10" value="2">
-                <span id="blackWhiteCValue">2</span>
-            </label>
-            <label>
-                <input type="checkbox" id="applyMorphology"> 应用形态学操作
-            </label>
-        </div>
+        <!-- 黑白处理不再需要参数 -->
 
         <!-- 增强处理参数 -->
         <div id="enhanceParams" class="param-group" style="display: none;">
@@ -688,7 +643,7 @@ function processImage(processType) {
     }
 
     // 显示对应参数
-    showParams(processType);
+    // showParams(processType);
 
     const resultDiv = document.getElementById('processingResult');
     const processedImg = document.getElementById('processedImage');
@@ -702,26 +657,16 @@ function processImage(processType) {
     let params = {};
     switch(processType) {
         case 'grayscale':
-            params = {
-                method: document.getElementById('grayscaleMethod').value
-            };
+            // 灰度处理不再需要参数
+            params = {};
             break;
         case 'sharpen':
-            params = {
-                intensity: parseFloat(document.getElementById('sharpenIntensity').value),
-                use_unsharp_mask: document.getElementById('useUnsharpMask').checked,
-                sigma: parseFloat(document.getElementById('sharpenSigma').value)
-            };
+            // 锐化处理不再需要参数
+            params = {};
             break;
         case 'blackWhite':
-            params = {
-                method: document.getElementById('blackWhiteMethod').value,
-                threshold: parseInt(document.getElementById('blackWhiteThreshold').value),
-                block_size: parseInt(document.getElementById('blackWhiteBlockSize').value),
-                c: parseInt(document.getElementById('blackWhiteC').value),
-                apply_morphology: document.getElementById('applyMorphology').checked,
-                kernel_size: 3
-            };
+            // 黑白处理不再需要参数
+            params = {};
             break;
         case 'enhance':
             params = {
@@ -738,16 +683,16 @@ function processImage(processType) {
     let apiUrl = '';
     switch(processType) {
         case 'grayscale':
-            apiUrl = '/doc_scan/grayscale/';
+            apiUrl = '/doc_scan/grayscale';
             break;
         case 'sharpen':
-            apiUrl = '/doc_scan/sharpen/';
+            apiUrl = '/doc_scan/sharpen';
             break;
         case 'blackWhite':
-            apiUrl = '/doc_scan/black-white/';
+            apiUrl = '/doc_scan/black-white';
             break;
         case 'enhance':
-            apiUrl = '/doc_scan/enhance/';
+            apiUrl = '/doc_scan/enhance';
             break;
         default:
             alert('未知的处理类型');
