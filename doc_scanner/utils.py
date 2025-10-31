@@ -197,16 +197,10 @@ def process_image_base(image_data, process_func, process_name, **kwargs):
         # 转换为 base64
         result_base64 = image_to_base64(processed_image)
 
-        processing_time = time.time() - start_time
-
         return {
             'success': True,
             'processed_image': f"data:image/jpeg;base64,{result_base64}",
-            'processing_time': processing_time,
             'timestamp': time.time(),
-            'process_type': process_name,
-            'original_size': original_size,
-            'processed_size': processed_image.shape[:2][::-1]  # (width, height)
         }
 
     except Exception as e:

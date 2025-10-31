@@ -715,10 +715,6 @@ function processImage(processType) {
         if (data.success) {
             processedImg.src = data.processed_image;
             infoDiv.innerHTML = `
-                <strong>处理类型:</strong> ${data.process_type}<br>
-                <strong>处理时间:</strong> ${(data.processing_time * 1000).toFixed(2)} ms<br>
-                <strong>原始尺寸:</strong> ${data.original_size[0]} × ${data.original_size[1]}<br>
-                <strong>处理尺寸:</strong> ${data.processed_size[0]} × ${data.processed_size[1]}<br>
                 <strong>时间戳:</strong> ${new Date(data.timestamp * 1000).toLocaleString()}
             `;
         } else {
