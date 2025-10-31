@@ -13,22 +13,12 @@ logger = logging.getLogger(__name__)
 
 
 def process_grayscale(image, **kwargs):
-    """灰度处理 - 增加参数控制"""
+    """灰度处理 - 加权平均法"""
     try:
-        # 支持多种灰度转换方法
-        method = kwargs.get('method', 'average')  # average, luminosity, custom
-
-        if method == 'luminosity':
-            # 亮度加权法
-            gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        elif method == 'custom':
-            # 自定义权重
-            weights = kwargs.get('weights', [0.299, 0.587, 0.114])
-            gray_image = np.dot(image[..., :3], weights)
-            gray_image = gray_image.astype(np.uint8)
-        else:  # average
-            # 平均值法
-            gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # 使用加权平均法进行灰度化（ITU-R 601-2亮度变换）
+        weights = [0.299, 0.587, 0.114]
+        gray_image = np.dot(image[..., :3], weights)
+        gray_image = gray_image.astype(np.uint8)
 
         # 将单通道灰度图转换为三通道以便显示
         gray_image_bgr = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
@@ -39,26 +29,29 @@ def process_grayscale(image, **kwargs):
 
 
 def process_sharpen(image, **kwargs):
-    """锐化处理 - 增加参数控制"""
+    """锐化处理 - USM锐化算法"""
     try:
-        # 锐化强度参数
-        intensity = kwargs.get('intensity', 1.0)
-
-        # 创建锐化核
-        kernel = np.array([[-1, -1, -1],
-                           [-1, 8 + intensity, -1],
-                           [-1, -1, -1]])
-
-        # 归一化核
-        kernel = kernel / np.sum(np.abs(kernel))
-
-        sharpened = cv2.filter2D(image, -1, kernel)
-
-        # 可选：使用非锐化掩蔽
-        if kwargs.get('use_unsharp_mask', False):
-            blurred = cv2.GaussianBlur(image, (0, 0), kwargs.get('sigma', 1.0))
-            sharpened = cv2.addWeighted(image, 1.0 + intensity, blurred, -intensity, 0)
-
+        # USM (Unsharp Mask)锐化算法
+        # 1. 对原图进行高斯模糊
+        # 2. 用原图减去模糊图得到细节图
+        # 3. 将细节图按比例加到原图上
+        
+        # 使用固定参数进行高斯模糊
+        sigma = 1.0
+        # 计算合适的核大小，通常为sigma的6倍左右，且为奇数
+        kernel_size = int(6 * sigma + 1)
+        if kernel_size % 2 == 0:
+            kernel_size += 1
+            
+        # 执行高斯模糊
+        blurred = cv2.GaussianBlur(image, (kernel_size, kernel_size), sigma)
+        
+        # 设置锐化强度（固定值）
+        intensity = 1.0
+        
+        # 应用USM锐化：原图 + 强度*(原图 - 模糊图)
+        sharpened = cv2.addWeighted(image, 1.0 + intensity, blurred, -intensity, 0)
+        
         return sharpened
     except Exception as e:
         logger.error(f"锐化处理失败: {str(e)}")
@@ -66,33 +59,15 @@ def process_sharpen(image, **kwargs):
 
 
 def process_black_white(image, **kwargs):
-    """黑白处理（二值化）- 增加参数控制"""
+    """黑白处理 - 二值化算法"""
     try:
+        # 先转换为灰度图
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-        # 二值化方法选择
-        method = kwargs.get('method', 'adaptive')  # adaptive, otsu, simple
-
-        if method == 'otsu':
-            # 大津算法
-            _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        elif method == 'simple':
-            # 简单阈值
-            threshold = kwargs.get('threshold', 127)
-            _, binary = cv2.threshold(gray, threshold, 255, cv2.THRESH_BINARY)
-        else:  # adaptive
-            # 自适应阈值
-            block_size = kwargs.get('block_size', 11)
-            c = kwargs.get('c', 2)
-            binary = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                                           cv2.THRESH_BINARY, block_size, c)
-
-        # 可选：应用形态学操作
-        if kwargs.get('apply_morphology', False):
-            kernel_size = kwargs.get('kernel_size', 3)
-            kernel = np.ones((kernel_size, kernel_size), np.uint8)
-            binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
-
+        
+        # 使用大津算法进行自适应阈值二值化
+        # 大津算法会自动计算最优阈值，对不同光照条件下的文档图像处理效果较好
+        _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        
         # 将单通道二值图转换为三通道以便显示
         binary_bgr = cv2.cvtColor(binary, cv2.COLOR_GRAY2BGR)
         return binary_bgr
