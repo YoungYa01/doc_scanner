@@ -26,12 +26,12 @@
    ```
 
 2. 访问Web界面：
-    - 打开浏览器，访问 `http://localhost:8000`
+    - 打开浏览器，访问 `http://localhost:8000/doc_scan/example`
     - 上传图片并点击"扫描文档"按钮
 
 ## 功能测试页面
 
-访问 [`http://localhost:8000`](http://localhost:8000) 即可
+访问 [`http://localhost:8000/doc_scan/example`](http://localhost:8000/doc_scan/example) 即可
 
 ## API响应格式
 
@@ -61,7 +61,7 @@
 
 ### 文档识别2
 
-这个效果优于上一个接口，但依旧存在识别幻觉
+这个效果优于上一个接口，但依旧存在识别的准确性问题
 
 #### 请求
 
@@ -91,9 +91,11 @@
 
 接口：[`POST /doc_scan/grayscale`](#灰度处理)
 
+请求体：form-data格式
+
 ```json
 {
-  
+  "image": "Image File"
 }
 ```
 
@@ -101,17 +103,23 @@
 
 ```json
 {
+  "success": true,
+  "processed_image": "Base64 Image",
+  "timestamp": 1761885121.1554973,
 }
 ```
+
 ### 增强处理
 
 #### 请求
 
 接口：[`POST /doc_scan/enhance`](#增强处理)
 
+请求体：form-data格式
+
 ```json
 {
-  
+  "image": "Image File"
 }
 ```
 
@@ -119,7 +127,9 @@
 
 ```json
 {
-  
+  "success": true,
+  "processed_image": "Base64 Image",
+  "timestamp": 1761885121.1554973,
 }
 ```
 ### 锐化处理
@@ -128,9 +138,11 @@
 
 接口：[`POST /doc_scan/sharpen`](#锐化处理)
 
+请求体：form-data格式
+
 ```json
 {
-  
+  "image": "Image File"
 }
 ```
 
@@ -138,18 +150,23 @@
 
 ```json
 {
-  
+  "success": true,
+  "processed_image": "Base64 Image",
+  "timestamp": 1761885121.1554973,
 }
 ```
+
 ### 黑白处理
 
 #### 请求
 
 接口：[`POST /doc_scan/black-white`](#黑白处理)
 
+请求体：form-data格式
+
 ```json
 {
-  
+  "image": "Image File"
 }
 ```
 
@@ -157,7 +174,9 @@
 
 ```json
 {
-  
+  "success": true,
+  "processed_image": "Base64 Image",
+  "timestamp": 1761885121.1554973,
 }
 ```
 
