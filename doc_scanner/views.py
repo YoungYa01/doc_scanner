@@ -302,26 +302,18 @@ def process_black_white_api(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def process_enhance_api(request):
-    """接口4：增强处理 - 支持参数"""
+    """接口4：图像增强 - 文档增强算法"""
     try:
-        # 获取图像数据和参数
+        # 获取图像数据
         if request.content_type == 'application/json':
             data = json.loads(request.body)
             image_str = data.get('image', '')
-            params = data.get('params', {})
         else:
             if 'image' not in request.FILES:
                 return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
             uploaded_file = request.FILES['image']
             image_data = uploaded_file.read()
             image_str = base64.b64encode(image_data).decode('utf-8')
-            params = {
-                'clip_limit': float(request.POST.get('clip_limit', 3.0)),
-                'tile_grid_size': int(request.POST.get('tile_grid_size', 8)),
-                'brightness': float(request.POST.get('brightness', 1.0)),
-                'contrast': float(request.POST.get('contrast', 1.0)),
-                'sharpen_after_enhance': request.POST.get('sharpen_after_enhance', 'false').lower() == 'true',
-            }
 
         if not image_str:
             return JsonResponse({'success': False, 'error': '未提供图像数据'}, status=400)
@@ -332,8 +324,8 @@ def process_enhance_api(request):
 
         image_data = base64.b64decode(image_str)
 
-        # 处理图像
-        result = process_image_base(image_data, process_enhance, "enhance", **params)
+        # 处理图像 - 不再传递参数，使用默认的文档增强算法
+        result = process_image_base(image_data, process_enhance, "enhance")
 
         if result['success']:
             return JsonResponse(result)
