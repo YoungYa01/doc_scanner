@@ -350,24 +350,7 @@
 
         <!-- 黑白处理不再需要参数 -->
 
-        <!-- 增强处理参数 -->
-        <div id="enhanceParams" class="param-group" style="display: none;">
-            <label>对比度限制: <input type="range" id="enhanceClipLimit" min="1.0" max="10.0" step="0.5" value="3.0">
-                <span id="enhanceClipLimitValue">3.0</span>
-            </label>
-            <label>网格大小: <input type="range" id="enhanceTileGridSize" min="2" max="16" step="2" value="8">
-                <span id="enhanceTileGridSizeValue">8</span>
-            </label>
-            <label>亮度: <input type="range" id="enhanceBrightness" min="0.5" max="2.0" step="0.1" value="1.0">
-                <span id="enhanceBrightnessValue">1.0</span>
-            </label>
-            <label>对比度: <input type="range" id="enhanceContrast" min="0.5" max="2.0" step="0.1" value="1.0">
-                <span id="enhanceContrastValue">1.0</span>
-            </label>
-            <label>
-                <input type="checkbox" id="sharpenAfterEnhance"> 增强后锐化
-            </label>
-        </div>
+        <!-- 增强处理不再需要参数 -->
     </div>
 
     <div class="processing-buttons" style="display: flex; gap: 10px; flex-wrap: wrap; margin: 15px 0;">
@@ -382,11 +365,11 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
             <div>
                 <h4>原始图片</h4>
-                <img id="originalProcessImage" style="max-width: 100%; max-height: 300px;">
+                <img id="originalProcessImage" style="width: 100%;">
             </div>
             <div>
                 <h4>处理结果</h4>
-                <img id="processedImage" style="max-width: 100%; max-height: 300px;">
+                <img id="processedImage" style="width: 100%;">
             </div>
         </div>
         <div id="processingInfo" style="margin-top: 15px; padding: 10px; background: #f5f5f5; border-radius: 5px;"></div>
@@ -669,13 +652,8 @@ function processImage(processType) {
             params = {};
             break;
         case 'enhance':
-            params = {
-                clip_limit: parseFloat(document.getElementById('enhanceClipLimit').value),
-                tile_grid_size: parseInt(document.getElementById('enhanceTileGridSize').value),
-                brightness: parseFloat(document.getElementById('enhanceBrightness').value),
-                contrast: parseFloat(document.getElementById('enhanceContrast').value),
-                sharpen_after_enhance: document.getElementById('sharpenAfterEnhance').checked
-            };
+            // 增强处理不再需要参数
+            params = {};
             break;
     }
 

@@ -77,40 +77,94 @@ def process_black_white(image, **kwargs):
 
 
 def process_enhance(image, **kwargs):
-    """图像增强处理 - 增加参数控制"""
+    """图像增强处理 - 文档扫描增强算法"""
     try:
-        # 对比度增强参数
-        clip_limit = kwargs.get('clip_limit', 3.0)
-        tile_grid_size = kwargs.get('tile_grid_size', 8)
-        brightness = kwargs.get('brightness', 1.0)
-        contrast = kwargs.get('contrast', 1.0)
+        result = image.copy()
+    
+        # 1. 黑白文字处理（二值化）
+        gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
+        # # 自适应二值化（高斯加权法，更抗噪）
+        # binary = cv2.adaptiveThreshold(
+        #     gray, 
+        #     255, 
+        #     cv2.ADAPTIVE_THRESH_GAUSSIAN_C,  # 高斯加权局部阈值
+        #     cv2.THRESH_BINARY, 
+        #     blockSize=21,  # 邻域窗口大小（需为奇数，建议5~21，文字细则选小，如7）
+        #     C=5            # 常数偏移量（负数降低阈值，保留更多文字；正数提高阈值，过滤噪声）
+        # )
+        # result = cv2.cvtColor(binary, cv2.COLOR_GRAY2BGR)
+        # gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
 
-        # 亮度对比度调整
-        enhanced = cv2.convertScaleAbs(image, alpha=contrast, beta=(brightness - 1.0) * 255)
+        # 1. 计算图像统计特征（亮度均值和标准差）
+        mean_val = cv2.mean(gray)[0]  # 全局亮度均值（0~255）
+        std_val = gray.std()          # 亮度标准差（值小说明对比度低）
 
-        # 应用 CLAHE 对比度限制自适应直方图均衡化
-        lab = cv2.cvtColor(enhanced, cv2.COLOR_BGR2LAB)
-        l, a, b = cv2.split(lab)
+        print(f"mean_val: {mean_val}, std_val: {std_val}")
 
-        clahe = cv2.createCLAHE(clipLimit=clip_limit, tileGridSize=(tile_grid_size, tile_grid_size))
-        l_enhanced = clahe.apply(l)
 
-        # 合并通道并转换回 BGR
-        lab_enhanced = cv2.merge([l_enhanced, a, b])
-        enhanced = cv2.cvtColor(lab_enhanced, cv2.COLOR_LAB2BGR)
+        # 2. 动态调整blockSize（邻域窗口大小）
+        if std_val < 40:  # 对比度低（噪声敏感），用更大窗口平滑噪声
+            block_size = 21   # 窗口大→局部阈值更稳健，减少噪点
+        else:  # 对比度高，用小窗口保留细节
+            block_size = 11   # 窗口小→更灵敏捕捉局部细节
 
-        # 可选：锐化增强后的图像
-        if kwargs.get('sharpen_after_enhance', False):
-            kernel = np.array([[-1, -1, -1],
-                               [-1, 9, -1],
-                               [-1, -1, -1]])
-            enhanced = cv2.filter2D(enhanced, -1, kernel)
+        # 确保blockSize为奇数
+        block_size = block_size if block_size % 2 == 1 else block_size + 1
 
-        return enhanced
+        # 3. 动态调整C（阈值偏移量）
+        if mean_val < 100:  # 整体偏暗，降低阈值（负C）保留更多内容
+            C = 9
+        elif mean_val > 170:  # 整体偏亮，提高阈值（正C）过滤高光噪声
+            C = 19
+        else:  # 亮度适中，默认C
+            C = 13
+
+        # 4. 应用动态参数的自适应二值化
+        binary = cv2.adaptiveThreshold(
+            gray,
+            255,
+            cv2.ADAPTIVE_THRESH_GAUSSIAN_C,  # 高斯加权更抗噪
+            cv2.THRESH_BINARY,
+            blockSize=block_size,
+            C=C
+        )
+        result = cv2.cvtColor(binary, cv2.COLOR_GRAY2BGR)
+        
+        # 2. 变细处理（形态学腐蚀，参数0.1）
+        kernel = np.ones((2, 2), np.uint8)
+        result = cv2.erode(result, kernel, iterations=1)
+        
+        # 3. 高斯模糊（半径1.2）
+        # kernel_size = int(6 * 1.2 + 1)
+        # if kernel_size % 2 == 0:
+        #     kernel_size += 1
+        # result = cv2.GaussianBlur(result, (kernel_size, kernel_size), 1.2)
+        blur_radius = 0.5  # 降低模糊强度
+        kernel_size = int(6 * blur_radius + 1)
+        if kernel_size % 2 == 0:
+            kernel_size += 1  # 核尺寸变为5×5（6×0.8+1=5.8→6→7？不，0.8×6=4.8+1=5.8→取5，因5是奇数）
+        result = cv2.GaussianBlur(result, (kernel_size, kernel_size), blur_radius)
+
+        # 4. 高斯锐化（半径3, 阶数7）
+        # 先模糊再锐化
+        blur = cv2.GaussianBlur(result, (7, 7), 3)
+        result = cv2.addWeighted(result, 2.0, blur, -1.0, 0)  # 差值更明显，边缘更锐
+        
+        # 5. 多尺度细节增强（18）
+        # 使用多个尺度的拉普拉斯算子增强细节
+        for scale in range(1, 4):
+            # 不同尺度的增强
+            laplacian = cv2.Laplacian(result, cv2.CV_64F, ksize=5)
+            laplacian_abs = np.uint8(np.absolute(laplacian))
+            # 根据参数18调整增强强度
+            result = cv2.addWeighted(result, 1.0, laplacian_abs, 0.12, 0)  # 强度从0.18提升到0.3
+        
+        # 6. USM锐化
+        result = process_sharpen(result)
+        return result
     except Exception as e:
         logger.error(f"图像增强失败: {str(e)}")
         raise
-
 
 def image_to_base64(image):
     """将 OpenCV 图像转换为 base64 字符串 - 类似您原有代码"""
